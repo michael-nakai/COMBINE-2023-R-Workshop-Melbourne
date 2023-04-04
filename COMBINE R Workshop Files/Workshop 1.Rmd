@@ -1,0 +1,321 @@
+---
+title: "COMBINE R Workshop 2023"
+author: "Uditi Shah"
+date: '2023-03-22'
+output: html_document
+---
+
+## **Starting out in R**
+
+## Variables
+
+*Variables* is the name given to a value.
+
+We can create a new variable by using **\<-** or **=** to assign it to a value.
+
+*Note: In this tutorial we will be using \<- to assign variables*
+
+```{r }
+width <- 5
+```
+
+There are some rules when generating variable names.
+
+-   Variable Rules:
+    -   Spaces are not allowed inside variable names.
+    -   Punctuation is not allowed within variable names.
+        -   Exception to this rule is using . or \_
+    -   Numbers are allowed, except as the first character.
+
+**Variable with space**
+
+```{r, error=TRUE}
+my width <- 5
+
+```
+
+*Allowed Alternative:*
+
+```{r, error=TRUE}
+my_width <- 5
+```
+
+**Variable with invalid punctuation**
+
+```{r, error=TRUE}
+my,width <- 5
+```
+
+*Allowed Alternative:*
+
+```{r, error=TRUE}
+my.width <- 5
+my_width <- 5
+```
+
+**Variable with number as the first character**
+
+```{r, error=TRUE}
+2width <- 5
+```
+
+*Allowed Alternative:*
+
+```{r, error=TRUE}
+width2 <- 5
+```
+
+So...What is the use of assigning variables?
+
+We can use variables in basic arithmetic equations.
+
+Calculate the area of a square:
+
+```{r Practice 1}
+
+```
+
+The values assigned to variables can also be changed.
+
+```{r}
+width <- 10
+```
+
+Notice that the value of **"area"** has not changed from the value we previously calculated before we assigned a new value to **"width"**.
+
+## Vectors
+
+**Vector** means different things in different fields (mathematics, geometry, biology), but in *R* it is a fancy name for a collection of numbers. We call the individual number elements of the vector.
+
+We can make vectors with c( ), for example *"c(1,2,3)"*. In R, **c** means *"combine"*. R is obsessed with vectors, in R even single numbers are vectors of length one. Many things that can be done with a single number can also be done with a vector. For example, arithmetic can be done on vectors as it can be single numbers.
+
+```{r}
+my_vector <- c(10 ,20 ,30 ,40 ,50)
+my_vector
+my_vector + 1
+my_vector + my_vector 
+my_vector*5 #multiplying all numeric data in vector by 5
+```
+
+```{r}
+length(my_vector)
+c(60, my_vector) #adding elements to the start of the vector
+c(my_vector, 60) #adding elements to the end of the vector
+```
+
+## Basic Data Types In R
+
+To take complete advantage of the R language, you'll need a strong understanding of the basic data types and data structures and how to effectively use them.
+
+Data structures are very important to understand because these are the objects you will manipulate on a day-to-day basis in R. Dealing with object conversions is one of the most common sources of frustration for beginners.
+
+**R has 6 basic data types but the 3 main ones we need to know are:**
+
+-   character:"a", "bcd"
+-   numeric: (real or decimal) 2, 15.5
+-   logical: TRUE, FALSE
+
+If we want to check the object's data we can use the R function "typeof()"
+
+For example:
+
+```{r}
+x <- "dataset"
+typeof(x) #tells you the data type of the vector/variable
+```
+
+```{r}
+x <- 1L
+typeof(x)
+```
+
+```{r}
+x <- 2> 1
+x
+typeof(x)
+```
+
+## Types of vectors
+
+We will also encounter vectors of character strings, for example:
+
+```{r}
+c("hello","world")
+```
+
+Or logical vectors:
+
+```{r}
+c(TRUE, TRUE, FALSE, TRUE) 
+typeof(c(TRUE, TRUE, FALSE, TRUE))
+```
+
+Can you have a vector with mixing types?
+
+```{r}
+typeof(c(2, "hello")) #since there is a number and character, since num can be represented as a character, R's output for typeof is character  
+```
+
+Because vectors can only contain one class of data type, R chooses a lowest common denominator type of vector, a type that can contain everything we are trying to put in it. A different language might stop with an error, but R tries to soldier on as best it can. A number can be represented as a character string, but a character string can not be represented as a number, so when we try to put both in the same vector R converts everything to a character string.
+
+## Indexing vectors
+
+Access elements of a vector with [ ], for example my_vector[1] to get the first element. You can also assign to a specific element of a vector.
+
+```{r}
+my_vector[1] #indexing
+
+```
+
+Try changing the second element of `my_vector` to 5!
+
+```{r}
+my_vector <- c(10, 5, 30, 40, 50) #method 1: hardcode it
+#OR
+my_vector[2] <- c(5) #method 2: using indexing
+my_vector
+
+```
+
+We can also use a vector to index another vector!
+
+```{r}
+my_index <- c(4,3,2)
+my_vector[my_index] #to get items at the 4th, 3rd and 2nd index position
+my_vector[my_vector > 20] #to get numbers which are greater than 20 in our vector
+```
+
+We can create and index character vectors as well. A cafe is using R to create their menu.
+
+```{r}
+items <- c("spam", "eggs", "beans", "bacon", "sausage")
+items[-1] #removes element at first index in items
+
+```
+
+What does items[-3] produce? Based on what you find, use indexing to create a version of items without "spam".
+
+Use indexing to create a vector containing spam, eggs, sausage, spam, and spam.
+
+Add a new item, "lobster", to items.
+
+```{r}
+c(items, "lobster") #best way to add something to your vector in R
+items
+
+#how to add something in the middle of the list? 
+new_items_list <- c(items[1:2], "lobster", items[3:5])
+new_items_list
+```
+
+## Sequences
+
+Another way to create a vector is with `:` :
+
+```{r}
+c(1:10) #how to list everything from the 1-50
+```
+
+This can be useful when combined with indexing:
+
+```{r}
+items[1:4]
+```
+
+## Functions
+
+Functions are the things that do all the work for us in R: calculate, manipulate data, read and write to files, produce plots. R has many built in functions and we will also be loading more specialized functions from "packages".
+
+We've already seen several functions: c( ), length( ). Let's now have a look at sum( ).
+
+```{r}
+sum(my_vector) #type ?sum into the console to find out what the sum function does.
+```
+
+We called the function sum with the argument my_vector, and it returned the value 135. We can get help on how to use sum with:
+
+```{r}
+?sum # this is the way to access the help page
+```
+
+Some functions take more than one argument. Let's look at the function rep, which means "repeat", and which can take a variety of different arguments. In the simplest case, it takes a value and the number of times to repeat that value.
+
+```{r}
+rep(42, 10) #rep is for the repeat function 
+```
+
+As with many functions in R (which is obsessed with vectors) the thing to be repeated can be a vector with multiple elements.
+
+```{r}
+rep(c(1,2,3), 10)
+```
+
+R packages are collections of functions and data sets developed by the community. They increase the power of R by improving existing base R functionalities, or by adding new ones. For example, if you are usually working with data frames, probably you will have heard about dplyr or data.table, two of the most popular R packages.\
+- If required, install packages using the "install.packages( )" function.
+
+```{r}
+# install.packages("dplyr")
+install.packages("data.table")
+
+#install.packages(c("dplyr", "data.table")) #this is how you can install two packages at once
+
+```
+
+```{r}
+library(dplyr)
+library(data.table)
+```
+
+Here we can install packages from CRAN. We can also install packages from bioconductor and github.
+
+CRAN: the official repository, it is a network of ftp and web servers maintained by the R community around the world. The R foundation coordinates it, and for a package to be published here, it needs to pass several tests that ensure the package is following CRAN policies. You can find more details here.
+
+Bioconductor: this is a topic specific repository, intended for open source software for bioinformatics. As CRAN, it has its own submission and review processes, and its community is very active having several conferences and meetings per year.
+
+Github : although this is not R specific, Github is probably the most popular repository for open source projects. Its popularity comes from the unlimited space for open source, the integration with git, a version control software, and its ease to share and collaborate with others. But be aware that there is no review process associated with it.
+
+In the case of Bioconductor, the standard way of installing a package is by first executing the following script:
+
+```{r message=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+```
+
+This will install the tool that we are going to use to install Bioconductor packages: BiocManager. If you want to install the core packages of Bioconductor just type it without further arguments:
+
+```{r}
+BiocManager::install()
+```
+
+If, however, you are interested in just a few particular packages from this repository you can type their names directly as a character vector:
+
+```{r}
+BiocManager::install(c("GenomicFeatures", "AnnotationDbi"))
+```
+
+## *Practice Questions*
+
+**Questions: Part 1**\
+Use sum to sum from 1 to 10,000.
+
+```{r}
+
+```
+
+Take the cumulative sum of my_vector created earlier. Hint: Google to find the right function to use.
+
+```{r}
+
+```
+
+Find the average and standard deviation of my_vector created earlier.
+
+```{r}
+
+```
+
+Look at the documentation for the seq function. What does seq do? Give an example of using seq with either the by or length.out argument.
+
+```{r}
+
+```

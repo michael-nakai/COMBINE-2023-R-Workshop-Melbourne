@@ -1,0 +1,358 @@
+---
+title: "COMBINE R Workshop Session 2"
+author: Jia Qi Beh
+output: html_document
+date: "2023-02-10"
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+# Basics of Data Manipulation: Part 1
+
+In this session, we will look at how you can manipulate your data in R Studio.
+
+The most commonly used data type is data frame, which are usually imported from CSV files.
+Examples: .csv
+
+## Install and load packages
+
+For this session, we will be using the 'dplyr' package in tidyverse.
+
+```{r}
+
+install.packages("tidyverse")   # if you have not already done so 
+library(tidyverse)   # load package 
+
+```
+
+You can check if the 'dplyr' was loaded into R from the 'Packages' panel on the right.
+
+## Load dataset
+
+We will use the "read.csv" function to load our data.
+
+Hint: I prefer using the absolute or full path in the file name.
+You can press TAB to navigate to your working directory.
+
+```{r read.csv}
+
+data <- read.csv("./s2_p1_data.csv")
+
+data
+View(data)  # opens a new window
+
+```
+
+We can extract information of the data frame with these functions:
+
+```{r}
+
+nrow(data)  # total number of rows
+ncol(data)  # total number of columns 
+dim(data)  # prints dimension - number of rows and columns
+colnames(data)  # print all column names 
+typeof(data$ID)  # check data type for each column
+str(data)  # display data type of all columns 
+summary(data$Age)  # prints summary of each data column
+
+```
+
+## Logical operators
+
+-   `x == y` -- "equal to" (not the same as = )
+
+-   `x != y` -- "not equal to"
+
+-   `x < y` -- "less than"
+
+-   `x > y` -- "greater than"
+
+-   `x <= y` -- "less than or equal to"
+
+-   `x >= y` -- "greater than or equal to"
+
+-   `a & b` -- "and", TRUE only if both `a` and `b` are TRUE.
+
+-   `a | b` -- "or", TRUE if either `a` or `b` or both are TRUE.
+
+## Pipe operator
+
+-   %\>% -- piping one function into the next - when combining two or more functions.
+
+## mutate()
+
+Now let's move on to the more exciting part of dplyr!
+
+What if you want to create a new column which shows the difference between Average Age and Actual Age?
+
+Hints:
+
+1\.
+We know the average age from summary( ) -- look for mean Age!
+
+2\.
+Use mutate() to create a new column.
+(not row!)
+
+```{r}
+
+# look for differences between Mean Age and Age of individual
+mutate(data, newcol = 26.23 - Age) 
+# OR
+data %>% mutate(newcol = 26.23 - Age)
+
+# Save it to a new variable
+data.1 <- data %>% mutate(newcol = 26.23 - Age)
+data.1
+
+data  # preserve the original data frame
+
+```
+
+Saving the new data to a new variable prevents the loss of the old dataset.
+You can still call out the previous data using "data" or "View(data)".
+
+## rename()
+
+Next, you want to rename your new column.
+But how?
+
+1.  Use the rename() function.
+2.  Be careful of the order -- NEW name = OLD name
+
+```{r}
+
+data.1 %>% rename(diffAge = newcol)
+
+data.2 <- data.1 %>% rename(diffAge = newcol)
+data.2
+
+data.1
+
+```
+
+## relocate()
+
+You wish to relocate the new column next to Age.
+
+```{r}
+
+data.2 
+data.2 %>% relocate(diffAge, .after = Age)
+# OR
+data.2 %>% relocate(diffAge, .before = ReasonForAdmission)
+
+data.2 <- data.2 %>% relocate(diffAge, .after = Age)  # replace original data frame
+data.2
+
+```
+
+## group_by %\>% ungroup
+
+What if you want to know the average Length of Stay by sex?
+
+1.  Use group_by()
+2.  After grouping, use summarise()
+
+```{r}
+
+data.2 %>% 
+  group_by(Sex) %>% 
+  summarise(n = n(),   # tells the total number of observations for each sex
+            m = mean(LengthOfStay)) %>%   # calculates mean Age for each sex 
+  ungroup 
+
+```
+
+Don't get mixed up with summarise() and summary()!
+
+## filter()
+
+What if you are only interested in the average Length of Stay among males?
+
+1.  Use filter() to extract rows for Sex=Male
+2.  Use summarise()
+
+```{r}
+
+data.2 %>% 
+  filter(Sex == "Male")
+
+data.2 %>% 
+  filter(Sex == "Male") %>%    # be careful to use "" when specifying for object 
+  summarise(m = mean(LengthOfStay))
+
+```
+
+How about looking at the average Length of Stay for males with Chronic illness?
+
+Hint: Use the AND operator.
+
+```{r}
+
+data.2 %>% 
+  filter(Sex == "Male" & ReasonForAdmission == "Chronic")
+
+data.2 %>% 
+  filter(Sex == "Male" & ReasonForAdmission == "Chronic") %>%  
+  summarise(m = mean(LengthOfStay))
+
+```
+
+Taking it one step further - how would you find out the average Length of Stay for Males or Females with Chronic illness?
+
+```{r}
+
+data.2 %>%
+  filter(Sex == "Male" | Sex == "Female", ReasonForAdmission == "Chronic") %>%
+  summarise(m = mean(LengthOfStay))
+
+```
+
+Other options are available.
+Feel free to play around with different logical operators.
+
+What would you expect to get from the following examples?
+
+```{r}
+
+data.2 %>% filter(Sex != "Male")
+
+data.2 %>% filter(Age > 30)   # Make sure Age is a number, not a Character
+
+data.2 %>% filter(ReasonForAdmission %in% c("Chronic", "Accident"))  
+# what does %in% mean?
+
+data.2 %>% filter((Sex == "Female") | (Sex == "Male" & ReasonForAdmission == "Chronic"))
+
+```
+
+## select()
+
+Previously, we use filter() to select one or more ROWS.
+
+To select for one or more COLUMNS, we can use the 'select()' function.
+
+```{r}
+
+data.2 %>% select(ID, Sex, Age)
+
+data.2 %>% select(1,2,3)
+data.2 %>% select(1:3)
+
+data.2 %>% select(-Sex)
+data.2 %>% select(-c(Sex, Age))
+data.2 %>% select(-(2:3))
+
+```
+
+This can be useful when you want to recreate a new data frame without certain columns.
+
+## recode()
+
+If you wish to rename the objects in your data, use recode().
+NOTE: Again, be careful of the order -- "OLD object" = "NEW object"
+
+```{r}
+
+data.2 %>% mutate(Sex = recode(Sex, "Male" = "Man"))
+
+data.2 %>% mutate(ReasonForAdmission = recode(ReasonForAdmission, 
+                                              "Chronic" = "Cancer",
+                                              "Emergency" = "ICU"))
+
+```
+
+Remember to save your new data frame into a variable after making changes!
+
+## arrange()
+
+This is useful when you want to re-order your data frame.
+
+```{r}
+
+data.2 %>% arrange(Age)
+
+data.2 %>% arrange(desc(Age))
+
+```
+
+# Basics of Data Manipulation: Part 2
+
+In Part 2, we will try out some of the commands that we have looked at previously, using a larger dataset.
+
+For this, we are going to use the 'gapminder' dataset available from the R package gapminder.
+
+To do this, you first have to install and load the package:
+
+```{r}
+
+install.packages("gapminder")
+library(gapminder)
+
+```
+
+After loading the package, you can then call out the gapminder dataset.
+
+NOTE: The gapminder dataset is already in a data frame, so you don't have to use 'read.csv'.
+
+There are also other datasets available in Base R. Go to 'Packages' and look for the 'datasets' package.
+After clicking on it, a 'Help' panel will pop up with the names of the dataset available.
+For instance, the most commonly used dataset was the 'iris' dataset.
+
+# Tasks:
+
+## Warm-up
+
+Can you tell how many rows and columns are there?
+What are the column names?
+
+Solution:
+
+```{r}
+
+gapminder  # view data frame
+
+dim(gapminder)
+colnames(gapminder)
+
+```
+
+## Question 1
+
+You wish to know how many different countries were listed under each continent.
+Also, you wanted to know the number of observations for each country.
+
+Solution:
+
+```{r}
+#Type your answer here
+
+
+```
+
+## Question 2
+
+You wish to compare the average life expectancy of the population in Europe before and after 2000.
+
+Solution:
+
+```{r}
+#Type your answer here
+
+
+```
+
+## Question 3
+
+You wish to know in which year did Australia and China record the highest gdp per capita.
+Which country has the higher 'highest' gdp per capita?
+
+Solution:
+
+```{r}
+#Type your answer here
+
+
+```
